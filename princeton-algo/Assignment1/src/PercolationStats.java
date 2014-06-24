@@ -40,9 +40,15 @@ public class PercolationStats
 	private void monteCarloSimulation()
 	{
 		int x,y,count;
+		StdDraw.show(0); 
+
 		for (int i = 0; i < T; i++)
 		{
 			per = new Percolation(N);
+			
+			PercolationVisualizer.draw(per, N);
+	        StdDraw.show(100);
+	        
 			count = 0;
 			do
 			{	
@@ -54,6 +60,10 @@ public class PercolationStats
 				count++;
 				//StdOut.println("X="+x+" Y="+y);
 				per.open(x, y);
+				
+				PercolationVisualizer.draw(per, N);
+		        StdDraw.show(100);
+				
 				//per.display();
 			} while(!per.percolates());
 			//StdOut.println("Iteration = " + i +" Count = "+count);
