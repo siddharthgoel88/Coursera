@@ -4,14 +4,20 @@ public class PercolationStats
 {
 	private int T;
 	private int N;
-	private Percolation per;
+	private Percolation per[];
 	private double iterations[];
 	
 	public PercolationStats(int N, int T)
 	{
+		if (N <= 0 || T <= 0)
+			throw new IllegalArgumentException("Arguments less than or equal to zero");
+		
 		this.N = N;
 		this.T = T;
 		iterations = new double[T];
+		per = new Percolation[T];
+		for (int i = 0; i < T; i++)
+			per[i] = new Percolation(N);
 	}
 	
 	public double mean()
@@ -39,18 +45,19 @@ public class PercolationStats
 		int x,y,count;
 		for (int i = 0; i < T; i++)
 		{
-			per = new Percolation(N);
 			count = 0;
 			do
-			{
+			{	
 				do
 				{
-					x = StdRandom.uniform(N);
-					y = StdRandom.uniform(N);
-				} while (per.isOpen(x, y));
+					x = StdRandom.uniform(1,N+1);
+					y = StdRandom.uniform(1,N+1);
+				} while (per[i].isOpen(x, y));
 				count++;
-				per.open(x, y);
-			} while(!per.percolates());
+				//StdOut.println("X="+x+" Y="+y);
+				per[i].open(x, y);
+				//per.display();
+			} while(!per[i].percolates());
 			//StdOut.println("Iteration = " + i +" Count = "+count);
 			iterations[i] = (double)((1.0*count)/(N*N));
 		}
@@ -67,12 +74,10 @@ public class PercolationStats
 	{
 		int n = Integer.parseInt(args[0]);
 		int t = Integer.parseInt(args[1]);
-		if (n < 0 || t < 0)
-			throw new IllegalArgumentException("Arguments less than zero");
-		
+				
 		PercolationStats perstat = new PercolationStats(n, t);
 		perstat.monteCarloSimulation();
 		perstat.displayResult();
 	}
-
+ 
 }
