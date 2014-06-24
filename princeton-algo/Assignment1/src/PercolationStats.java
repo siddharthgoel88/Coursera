@@ -4,7 +4,7 @@ public class PercolationStats
 {
 	private int T;
 	private int N;
-	private Percolation per[];
+	private Percolation per;
 	private double iterations[];
 	
 	public PercolationStats(int N, int T)
@@ -15,9 +15,6 @@ public class PercolationStats
 		this.N = N;
 		this.T = T;
 		iterations = new double[T];
-		per = new Percolation[T];
-		for (int i = 0; i < T; i++)
-			per[i] = new Percolation(N);
 	}
 	
 	public double mean()
@@ -45,6 +42,7 @@ public class PercolationStats
 		int x,y,count;
 		for (int i = 0; i < T; i++)
 		{
+			per = new Percolation(N);
 			count = 0;
 			do
 			{	
@@ -52,12 +50,12 @@ public class PercolationStats
 				{
 					x = StdRandom.uniform(1,N+1);
 					y = StdRandom.uniform(1,N+1);
-				} while (per[i].isOpen(x, y));
+				} while (per.isOpen(x, y));
 				count++;
 				//StdOut.println("X="+x+" Y="+y);
-				per[i].open(x, y);
+				per.open(x, y);
 				//per.display();
-			} while(!per[i].percolates());
+			} while(!per.percolates());
 			//StdOut.println("Iteration = " + i +" Count = "+count);
 			iterations[i] = (double)((1.0*count)/(N*N));
 		}
@@ -72,10 +70,8 @@ public class PercolationStats
 
 	public static void main(String[] args) 
 	{
-		int n = Integer.parseInt(args[0]);
-		int t = Integer.parseInt(args[1]);
 				
-		PercolationStats perstat = new PercolationStats(n, t);
+		PercolationStats perstat = new PercolationStats(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
 		perstat.monteCarloSimulation();
 		perstat.displayResult();
 	}
