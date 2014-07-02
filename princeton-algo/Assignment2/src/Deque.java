@@ -167,10 +167,11 @@ public class Deque<Item> implements Iterable<Item>
 	public static void main(String[] args)   // unit testing
 	{
 		   Deque<String> queue = new Deque<String>();
-		   queue.addFirst("Hello");
-		   queue.addLast("World");
+		   //queue.addFirst("Hello");
+		   //queue.addLast("World");
 		   StdOut.println("Queue size = " + queue.size());
-		   StdOut.println("Removed item = " + queue.removeFirst());
-		   StdOut.println("Removed item = " + queue.removeLast());
+		   for (String string : queue) {
+			   StdOut.println(string+"\t");
+		}
 	}
 }
