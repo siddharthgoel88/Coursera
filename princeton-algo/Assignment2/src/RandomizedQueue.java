@@ -104,6 +104,11 @@ public class RandomizedQueue<Item> implements Iterable<Item>
 		}
 		
 	}
+	
+	public void debug()
+	{
+		StdOut.println("\nN = "+ count + "\t Array Length = "+array.length);
+	}
 
 	public Item sample()                     // return (but do not delete) a random item
 	{
