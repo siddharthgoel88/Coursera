@@ -8,6 +8,7 @@ public class RandomizedQueue<Item> implements Iterable<Item>
 	private int first;
 	private int last;
 	
+	@SuppressWarnings("unchecked")
 	public RandomizedQueue()                 // construct an empty randomized queue
 	{
 		count = 0;
@@ -55,6 +56,7 @@ public class RandomizedQueue<Item> implements Iterable<Item>
 					" elements and you are trying to resize the array size to "+ 
 					length + ", which is obviously illegal.");
 		
+		@SuppressWarnings("unchecked")
 		Item[] temp = (Item[]) new Object[length];
 		for (int i = 0; i < size(); i++)
 			temp[i] = array[(first+i)%array.length];
@@ -70,8 +72,11 @@ public class RandomizedQueue<Item> implements Iterable<Item>
 			throw new NoSuchElementException("Queue is already empty!");
 		
 		Item deleted;
-		StdRandom.shuffle(array, first, last);
+		
+		shuffle();
+		
 		deleted = array[first];
+		array[first] = null;
 		if (size() == 1)
 		{
 			first = -1;
@@ -82,12 +87,24 @@ public class RandomizedQueue<Item> implements Iterable<Item>
 		
 		count--;
 		
-		if(size() > 0 && size() < (array.length/4))
+		if(size() > 0 && size() == (array.length/4))
 			resize(array.length/2);
 		
 		return deleted;
 	}
 	
+	private void shuffle() 
+	{
+		if (first <= last)
+			StdRandom.shuffle(array, first, last);
+		else
+		{
+			StdRandom.shuffle(array, 0, last);
+			StdRandom.shuffle(array, first, array.length-1);
+		}
+		
+	}
+
 	public Item sample()                     // return (but do not delete) a random item
 	{
 		int rand = StdRandom.uniform(size());
@@ -102,7 +119,14 @@ public class RandomizedQueue<Item> implements Iterable<Item>
 	
 	private class RandomQueueIterator implements Iterator<Item>
 	{
-		int index = 0;
+		int index;
+		
+		public RandomQueueIterator()
+		{
+			index = 0;
+			if(!isEmpty())
+				shuffle();
+		}
 		
 		public boolean hasNext()
 		{
