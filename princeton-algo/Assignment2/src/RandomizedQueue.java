@@ -107,6 +107,9 @@ public class RandomizedQueue<Item> implements Iterable<Item>
 
 	public Item sample()                     // return (but do not delete) a random item
 	{
+		if(isEmpty())
+			throw new NoSuchElementException("Queue Empty");
+		
 		int rand = StdRandom.uniform(size());
 		rand = (rand+first)%array.length;
 		return array[rand];
@@ -120,17 +123,19 @@ public class RandomizedQueue<Item> implements Iterable<Item>
 	private class RandomQueueIterator implements Iterator<Item>
 	{
 		int index;
+		int count;
 		
 		public RandomQueueIterator()
 		{
 			index = 0;
+			count = 0;
 			if(!isEmpty())
-				shuffle();
+				index = StdRandom.uniform(size());
 		}
 		
 		public boolean hasNext()
 		{
-			return (index != size());
+			return (count != size());
 		}
 		
 		public void remove()
@@ -141,10 +146,17 @@ public class RandomizedQueue<Item> implements Iterable<Item>
 		@Override
 		public Item next() 
 		{
+			Item ret;
 			if(!hasNext())
 				throw new NoSuchElementException("Queue empty or already iterated to the last element");
 			
-			return array[(index++ + first)%array.length];
+			ret = array[(index++ + first)%array.length];
+			count++;
+			
+			if(index == size())
+				index=0;
+			
+			return ret;
 		}
 	}
 	
