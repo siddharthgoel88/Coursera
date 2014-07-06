@@ -73,7 +73,8 @@ public class RandomizedQueue<Item> implements Iterable<Item>
 		
 		Item deleted;
 		
-		shuffle();
+		//shuffle(); //Commented because shuffle made each dequeue of linear order.
+		sample(); // This made the each dequeue operation of constant time.
 		
 		deleted = array[first];
 		array[first] = null;
@@ -93,6 +94,7 @@ public class RandomizedQueue<Item> implements Iterable<Item>
 		return deleted;
 	}
 	
+	/*
 	private void shuffle() 
 	{
 		if (first <= last)
@@ -104,11 +106,12 @@ public class RandomizedQueue<Item> implements Iterable<Item>
 		}
 		
 	}
-	
+
 	public void debug()
 	{
 		StdOut.println("\nN = "+ count + "\t Array Length = "+array.length);
 	}
+	*/
 
 	public Item sample()                     // return (but do not delete) a random item
 	{
@@ -117,7 +120,12 @@ public class RandomizedQueue<Item> implements Iterable<Item>
 		
 		int rand = StdRandom.uniform(size());
 		rand = (rand+first)%array.length;
-		return array[rand];
+		Item temp;
+		temp = array[rand];
+		array[rand] = array[first];
+		array[first] = temp;
+		
+		return array[first];
 	}
 	
 	public Iterator<Item> iterator()         // return an independent iterator over items in random order
