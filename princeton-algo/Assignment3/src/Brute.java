@@ -1,7 +1,9 @@
+import java.util.Arrays;
+
 
 public class Brute {
 	private Point [] pts;
-
+	
 	public static void main(String[] args) {
 		if(args.length != 1)
 		{
@@ -17,7 +19,7 @@ public class Brute {
 
 	private void findCollinearPoints() {
 		int size = pts.length;
-		StdOut.println(size);
+		Arrays.sort(pts);
 		for (int i = 0; i < size-3; i++ ) 
 			for (int j = i+1; j < size-2; j++)
 				for (int k = j+1; k < size-1; k++)
@@ -28,7 +30,7 @@ public class Brute {
 									pts[j].toString() + " -> " +
 									pts[k].toString() + " -> " +
 									pts[l].toString() );
-						
+							pts[i].drawTo(pts[l]);
 						}
 					}
 	}
@@ -41,10 +43,15 @@ public class Brute {
 		size = Integer.parseInt(file.readString().trim());
 		input = file.readAllStrings();
 		pts = new Point[size];
+		
+		StdDraw.setXscale(0, 32768);
+		StdDraw.setYscale(0, 32768);
+		
 		while(size-- > 0) {
 			x = Integer.parseInt(input[(2*size)]);
 			y = Integer.parseInt(input[(2*size) + 1]);
 			pts[size] = new Point(x,y);
+			pts[size].draw();
 		}
 	}
 

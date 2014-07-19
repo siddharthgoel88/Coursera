@@ -17,9 +17,16 @@ public class Fast {
 		obj.findCollinearPoints();
 	}
 
+	//Not a good design but a much needed hack 
+	private void copyPoints(Point[] src, Point[] dest) {
+		int size = pts.length;
+		dest = Arrays.copyOf(src, size);
+	}
+	
 	private void findCollinearPoints() {
 		int size = pts.length;
 		int count=1, start=1, end=1;
+		copyPoints(pts, copy);
 		for (int i = 0; i < size-1; i++) {
 			StdOut.println(pts[i].toString());
 			Arrays.sort(pts, pts[i].SLOPE_ORDER);
@@ -37,6 +44,7 @@ public class Fast {
 					count = 1;
 				}
 			}
+			copyPoints(copy, pts);
 		}
 	}
 

@@ -15,7 +15,7 @@ import java.util.Comparator;
 public class Point implements Comparable<Point> {
 
     // compare points by slope
-    public final Comparator<Point> SLOPE_ORDER = new BySlope();       // YOUR DEFINITION HERE
+    public final Comparator<Point> SLOPE_ORDER = new BySlope(this);       // YOUR DEFINITION HERE
 
     private final int x;                              // x coordinate
     private final int y;                              // y coordinate
@@ -42,12 +42,15 @@ public class Point implements Comparable<Point> {
     // slope between this point and that point
     public double slopeTo(Point that) {
     	if (that.x == this.x) {
-    		if (that.y > this.y)
-    			return Double.POSITIVE_INFINITY;
-    		else 
+    		if (that.y == this.y)
     			return Double.NEGATIVE_INFINITY;
+    		else
+    			return Double.POSITIVE_INFINITY;
     	}
-    		
+    	
+    	if (that.y == this.y)
+    		return (+0.0);
+    	
     	return ((double)(that.y - this.y))/(that.x - this.x);
     }
 
@@ -55,14 +58,14 @@ public class Point implements Comparable<Point> {
     // comparing y-coordinates and breaking ties by x-coordinates
     public int compareTo(Point that) {
         if(this.y < that.y)
-        	return -1;
+        	return this.y - that.y;
         else if (this.y > that.y)
-        	return 1;
+        	return this.y - that.y;
         else {
         	if (this.x < that.x)
-        		return -1;
+        		return this.x - that.x;
         	else if(this.x > that.x)
-        		return 1;
+        		return this.x - that.x;
         	else
         		return 0;
         }
@@ -74,15 +77,34 @@ public class Point implements Comparable<Point> {
         /* DO NOT MODIFY */
         return "(" + x + ", " + y + ")";
     }
-
+    
     // unit test
     public static void main(String[] args) {
-        /* YOUR CODE HERE */
+        Point p,q,r,s;
+        p = new Point(448, 137);
+        q = new Point(344, 19);
+        r = new Point(56, 21);
+        s = new Point(135,96);
+        StdOut.println(p.SLOPE_ORDER.compare(q, r));
+        StdOut.println(p.SLOPE_ORDER.compare(s, q));
     }
     
-    public static class BySlope implements Comparator<Point> {
+    private static class BySlope implements Comparator<Point> {
+    	Point outer;
+    	BySlope(Point ot) {
+    		this.outer = ot;
+    	}
+    	
     	public int compare(Point x, Point y) {
-    		return x.compareTo(y);
+    			if (x == null || y == null)
+    				throw new NullPointerException();
+    			
+    		if( outer.slopeTo(x) == outer.slopeTo(y))
+    			return 0;
+    		else if (outer.slopeTo(x) > outer.slopeTo(y))
+    			return 1;
+    		else
+    			return -1;
     	}
     }
 }
