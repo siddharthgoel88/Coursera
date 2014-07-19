@@ -10,6 +10,7 @@
  *
  *************************************************************************/
 
+import java.util.Arrays;
 import java.util.Comparator;
 
 public class Point implements Comparable<Point> {
@@ -78,15 +79,33 @@ public class Point implements Comparable<Point> {
         return "(" + x + ", " + y + ")";
     }
     
+    private static void display(Point[] pt) {
+		String res="";
+		for (int i=0; i<pt.length; i++) {
+			res += pt[i].toString();
+			if (i != pt.length -1)
+				res += " -> ";
+		}
+		StdOut.println(res);
+	}
+    
     // unit test
     public static void main(String[] args) {
         Point p,q,r,s;
+        Point [] arr;
         p = new Point(448, 137);
         q = new Point(344, 19);
         r = new Point(56, 21);
         s = new Point(135,96);
         StdOut.println(p.SLOPE_ORDER.compare(q, r));
         StdOut.println(p.SLOPE_ORDER.compare(s, q));
+        arr = new Point[4];
+        arr[0] = new Point(0,10000);
+        arr[1] = new Point(10000, 0);
+        arr[2] = new Point(7000, 3000);
+        arr[3] = new Point(3000, 7000);
+        Arrays.sort(arr);
+        display(arr);
     }
     
     private static class BySlope implements Comparator<Point> {

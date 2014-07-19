@@ -1,8 +1,14 @@
 import java.util.Arrays;
+import java.util.HashMap;
 
 public class Fast {
 
-	private Point [] pts, copy;
+	private Point [] pts, temp;
+	private HashMap<String, String> check;
+
+	public Fast() {
+		check = new HashMap<String, String>();
+	}
 	
 	public static void main(String[] args) {
 		if(args.length != 1)
@@ -17,43 +23,57 @@ public class Fast {
 		obj.findCollinearPoints();
 	}
 
-	//Not a good design but a much needed hack 
-	private void copyPoints(Point[] src, Point[] dest) {
-		int size = pts.length;
-		dest = Arrays.copyOf(src, size);
-	}
-	
 	private void findCollinearPoints() {
-		int size = pts.length;
-		int count=1, start=1, end=1;
-		copyPoints(pts, copy);
+		int size = pts.length,j;
+		int start=1, end=1;
+		Arrays.sort(pts);
+		
 		for (int i = 0; i < size-1; i++) {
-			StdOut.println(pts[i].toString());
 			Arrays.sort(pts, pts[i].SLOPE_ORDER);
-			StdOut.println(pts[0].toString());
-			for (int j = 1; j < size-1; j++) {
-				if (pts[0].slopeTo(pts[j]) == pts[0].slopeTo(pts[j+1])) {
-					if (count == 1)
-						start = j;
-					count++;
-					if (j == size-2)
-						checkPrint(start,end);
-				} else {
-					end = j;
-					checkPrint(start,end);
-					count = 1;
-				}
+			j = 1;
+			while (j < size) {
+				start = j;
+				while ((++j < size) && (pts[0].slopeTo(pts[start]) == pts[0].slopeTo(pts[j])));
+				end = j-1;
+				checkPrint(start, end, i);
 			}
-			copyPoints(copy, pts);
+			Arrays.sort(pts);
 		}
 	}
-
-	private void checkPrint(int start, int end) {
+	
+	private String display(Point[] pt) {
+		String res="";
+		for (int i=0; i<pt.length; i++) {
+			res += pt[i].toString();
+			if (i != pt.length -1)
+				res += " -> ";
+		}
+		return res;
+	}
+	
+	private void checkPrint(int start, int end, int i) {
 		if (end - start > 1) {
-			StdOut.print(pts[0].toString());
-			while (start <= end)
-				StdOut.print(" -> " + pts[start++].toString());
-			StdOut.println();
+			int count = end -start + 2;
+			int j =0;
+			String result = "";
+			
+			temp = new Point[end-start+2];
+			temp[0] = pts[0];
+			for (j = 1; j<count; j++)
+				temp[j] = pts[start+j-1];
+			
+			//StdOut.println("i = " + i);
+			//StdOut.println(display(temp));
+			Arrays.sort(temp);
+			//StdOut.println(display(temp));
+			
+			result = display(temp);
+			if (check.get(result) == null) {
+				StdOut.println(result);
+				temp[0].drawTo(temp[count-1]);
+				check.put(result, "1");
+			}
+				
 		}
 	}
 
@@ -64,11 +84,15 @@ public class Fast {
 		size = Integer.parseInt(file.readString().trim());
 		input = file.readAllStrings();
 		pts = new Point[size];
+		
+		StdDraw.setXscale(0, 32768);
+		StdDraw.setYscale(0, 32768);
+		
 		while(size-- > 0) {
 			x = Integer.parseInt(input[(2*size)]);
 			y = Integer.parseInt(input[(2*size) + 1]);
 			pts[size] = new Point(x,y);
-		
+			pts[size].draw();
 		}
 	}
 	
