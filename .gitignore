@@ -1,1 +1,9 @@
+#Eclipse related dot files
 .metadata
+.classpath
+.project
+.settings
+.DS_Store
+.settings/org.eclipse.jdt.core.prefs
+
+bin/
