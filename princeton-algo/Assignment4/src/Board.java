@@ -177,15 +177,15 @@ public class Board {
 	private void swapDown(int[][] array, int x, int y) {
 		int temp;
 		temp = array[x][y];
-		array[x][y] = array[x-1][y];
-		array[x-1][y] = temp;		
+		array[x][y] = array[x+1][y];
+		array[x+1][y] = temp;		
 	}
 
 	private void swapUp(int[][] array, int x, int y) {
 		int temp;
 		temp = array[x][y];
-		array[x][y] = array[x+1][y];
-		array[x+1][y] = temp;
+		array[x][y] = array[x-1][y];
+		array[x-1][y] = temp;
 	}
 
 	// string representation of the board (in the output format specified below)
@@ -193,7 +193,7 @@ public class Board {
 		String result = "";
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
-				result += Integer.toString(board[i][j]) + "  ";
+				result += String.format("%2d ", board[i][j]);
 			}
 			result += "\n";
 		}
