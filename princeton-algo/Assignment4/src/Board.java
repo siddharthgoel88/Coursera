@@ -1,23 +1,34 @@
 
 public class Board {
 	
-	private final int[][] board;
-	private final int[][] goal;
+	private final byte[][] board;
 	private final int N;
 	private int zeroX;
 	private int zeroY;
 	
 	// Construct a board from an N-by-N array of blocks
 	// (where blocks[i][j] = block in row i, column j)
-	public Board(int[][] blocks) {          
-		N = blocks.length;
-		board = new int[N][N];
-		goal = new int[N][N];
+	public Board(int[][] blocks) {
+		this(integerToByte(blocks));
+	}
+	
+	private static byte[][] integerToByte(int[][] blocks) {
+		int size = blocks.length;
+		byte[][] byteArray = new byte[size][size];
+		
+		for (int i=0; i<size; i++)
+			for (int j=0; j<size; j++)
+				byteArray[i][j] = (byte)blocks[i][j];
+		return byteArray;
+	}
+	
+	private Board(byte[][] blocks) {
+		N = (byte)blocks.length;
+		board = new byte[N][N];
 		
 		for (int i =0; i < N; i++)
 			for (int j = 0; j < N; j++) {
-				board[i][j] = blocks[i][j];
-				goal[i][j] = (i * N) + j + 1;
+				board[i][j] = (byte)blocks[i][j];
 				
 				if (board[i][j] == 0) {
 					zeroX = i;
@@ -46,7 +57,7 @@ public class Board {
 		int hamcount = 0;
 		for (int i = 0; i < N; i++)
 			for (int j = 0; j < N; j++)
-				if (isCorrect(i, j))
+				if (!isCorrect(i, j))
 					hamcount++;
 		return hamcount;
 	}
@@ -62,9 +73,13 @@ public class Board {
 		for (int i = 0; i < N; i++)
 			for (int j = 0; j < N; j++) {
 				val = board[i][j];
+				if (val == 0)
+					continue;
+				
 				goalX = (int)(val - 1)/N;
 				goalY = (val - 1) % N;
 				dist = Math.abs(goalX - i) + Math.abs(goalY - j);
+				//StdOut.println("val="+val+", ("+i+","+j+") => ("+goalX+","+goalY+") distance is "+ dist);
 				manhcount += dist;
 			}
 		
@@ -81,8 +96,8 @@ public class Board {
 	}
 	
 	//make copy of array
-	private int[][] copyArray(int[][] array) {
-		int[][] copy = new int[array.length][array.length];
+	private byte[][] copyArray(byte[][] array) {
+		byte[][] copy = new byte[array.length][array.length];
 		
 		for (int i = 0; i < N; i++)
 			System.arraycopy(array[i], 0, copy[i], 0, array.length);
@@ -93,7 +108,7 @@ public class Board {
 	// a board obtained by exchanging two adjacent blocks in the same row
 	public Board twin() {
 		int i = 0;
-		int[][] array;
+		byte[][] array;
 		
 		if (zeroX == 0)
 			i++;
@@ -129,7 +144,7 @@ public class Board {
 	// all neighboring boards
 	public Iterable<Board> neighbors() {
 		Stack<Board> neigh = new Stack<Board>();
-		int[][] temp = new int[N][N];
+		byte[][] temp;
 		
 		temp = copyArray(board);
 
@@ -160,29 +175,29 @@ public class Board {
 		return neigh;
 	}
 	
-    private void swapRight(int[][] array, int x, int y) {
-    	int temp;
+    private void swapRight(byte[][] array, int x, int y) {
+    	byte temp;
     	temp = array[x][y];
     	array[x][y] = array[x][y+1];
     	array[x][y+1] = temp;
 	}
 
-	private void swapLeft(int[][] array, int x, int y) {
-		int temp;
+	private void swapLeft(byte[][] array, int x, int y) {
+		byte temp;
 		temp = array[x][y];
 		array[x][y] = array[x][y-1];
 		array[x][y-1] = temp;
 	}
 
-	private void swapDown(int[][] array, int x, int y) {
-		int temp;
+	private void swapDown(byte[][] array, int x, int y) {
+		byte temp;
 		temp = array[x][y];
 		array[x][y] = array[x+1][y];
 		array[x+1][y] = temp;		
 	}
 
-	private void swapUp(int[][] array, int x, int y) {
-		int temp;
+	private void swapUp(byte[][] array, int x, int y) {
+		byte temp;
 		temp = array[x][y];
 		array[x][y] = array[x-1][y];
 		array[x-1][y] = temp;
@@ -190,7 +205,7 @@ public class Board {
 
 	// string representation of the board (in the output format specified below)
 	public String toString() {
-		String result = "";
+		String result = N + "\n";
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
 				result += String.format("%2d ", board[i][j]);

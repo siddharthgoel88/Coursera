@@ -1,21 +1,32 @@
+import java.util.HashMap;
+
 
 public class Solver {
 	
-	private MinPQ<Solver.SearchNode> minpq;
-	private MinPQ<Solver.SearchNode> minpqTwin;
+	private final MinPQ<Solver.SearchNode> minpq;
+	private final MinPQ<Solver.SearchNode> minpqTwin;
 	private SearchNode goal;
+	private final HashMap<String, Integer> check;
+	private final HashMap<String, Integer> checkTwin;
 	
 	// find a solution to the initial board (using the A* algorithm)
 	public Solver(Board initial) {
-		
+		goal = null;
 		minpq = new MinPQ<Solver.SearchNode>();
 		minpqTwin = new MinPQ<SearchNode>();
+		check = new HashMap<String, Integer>();
+		checkTwin = new HashMap<String, Integer>();
 		
 		minpq.insert(new SearchNode(initial, null));
 		minpqTwin.insert(new SearchNode(initial.twin(), null));
 		
-		StdOut.println("Original:\n" + initial.toString());
-		StdOut.println("Twin:\n" + initial.twin().toString());
+		check.put(initial.toString(), 1);
+		checkTwin.put(initial.twin().toString(), 1);
+		
+		//StdOut.println("Hamming =" + initial.hamming());
+		//StdOut.println("Manhattan =" + initial.manhattan());
+		//StdOut.println("Original:\n" + initial.toString());
+		//StdOut.println("Twin:\n" + initial.twin().toString());
 		
 		SearchNode minNode = minpq.delMin();
 		SearchNode minNodeTwin = minpqTwin.delMin();
@@ -31,19 +42,21 @@ public class Solver {
 				break;
 			}
 			
-			pushNodes(minNode, minpq, initial.toString());
-			pushNodes(minNodeTwin, minpqTwin, initial.twin().toString());
+			pushNodes(minNode, minpq, check);
+			pushNodes(minNodeTwin, minpqTwin, checkTwin);
 			
 			minNode = minpq.delMin();
 			minNodeTwin = minpqTwin.delMin();
 		}
 	}
 	
-	private void pushNodes(SearchNode minNode, MinPQ<SearchNode> pq, String check) {
+	private void pushNodes(SearchNode minNode, MinPQ<SearchNode> pq, HashMap<String, Integer> ck) {
 		Board itrBoard = minNode.getBoard();
 		for (Board brd : itrBoard.neighbors() ) {
-			if (brd.toString() != check)
+			if (!ck.containsKey(brd.toString())) {
 				pq.insert(new SearchNode(brd, minNode));
+				ck.put(brd.toString(), 1);
+			}
 		}
 	}
 
@@ -68,7 +81,7 @@ public class Solver {
 		if (goal == null)
 			return null;
 		else {
-			Stack<Board> trace = new Stack<Board>();
+			final Stack<Board> trace = new Stack<Board>();
 			while (goal != null) {
 				trace.push(goal.getBoard());
 				goal = goal.getParent();
@@ -77,11 +90,13 @@ public class Solver {
 		}
 	}
 	
-	private class SearchNode implements Comparable<SearchNode> {
+	private final class SearchNode implements Comparable<SearchNode> {
 		
-		private int moves;
-		private Board self;
-		private SearchNode parent;
+		private final int moves;
+		private final Board self;
+		private final SearchNode parent;
+		private final int manpr;
+		private final int hampr;
 
 		private SearchNode(Board self, SearchNode parent) {
 			this.self = self;
@@ -89,15 +104,28 @@ public class Solver {
 			if (parent != null)
 				this.moves = parent.moves + 1;
 			else
-				this.moves = 1;
+				this.moves = 0;
+			
+			manpr = manpriority();
+			hampr = hampriority();
 		}
 		
 		@Override
 		public int compareTo(SearchNode that) {
-			if (this.manpriority() == that.manpriority())
-				return this.hampriority() - that.hampriority();
+			if (this.manpr == that.manpr) {
+				if (this.moves == that.moves)
+					return this.hampr-that.hampr;
+				else
+					return this.moves-that.moves;
+				/*
+				if (this.hampr == that.hampr)
+					return (this.moves - that.moves);
+				else
+					return this.hampr - that.hampr;
+				*/
+			}
 			else
-				return this.manpriority() - that.manpriority();
+				return this.manpr - that.manpr;
 		}
 		
 		private int manpriority() {
