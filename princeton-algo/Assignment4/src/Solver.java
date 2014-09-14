@@ -82,9 +82,10 @@ public class Solver {
 			return null;
 		else {
 			final Stack<Board> trace = new Stack<Board>();
-			while (goal != null) {
-				trace.push(goal.getBoard());
-				goal = goal.getParent();
+			SearchNode iter = goal;
+			while (iter != null) {
+				trace.push(iter.getBoard());
+				iter = iter.getParent();
 			}
 			return trace;
 		}
@@ -108,6 +109,8 @@ public class Solver {
 			
 			manpr = manpriority();
 			hampr = hampriority();
+			
+			assert parent == null || this.manpr >= this.parent.manpr;
 		}
 		
 		@Override
