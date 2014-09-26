@@ -1,37 +1,41 @@
 public class PercolationStats {
-	private int T;
-	private int N;
-	private Percolation perObj;
 	private double threshold[];
+	private int T;
 	
 	public PercolationStats(int N, int T) {   // perform T independent computational experiments on an N-by-N grid
 		if (N < 1 || T < 1)
 			throw new java.lang.IllegalArgumentException("Illegal Parameter");
 		
-		this.N = N;
 		this.T = T;
 		threshold = new double[T];
-		monteCarloExperiment();
+		monteCarloExperiment(N,T);
 	}
 	
-	private void monteCarloExperiment() {
+	private void monteCarloExperiment(int N, int T) {
+		Percolation perObj;
 		for (int i = 0; i < T; i++) {
 			int count = 0;
 			int x,y;
+			
+//			StdDraw.show(0); //Draw
+			
 			perObj = new Percolation(N);
 			while(!perObj.percolates()) {
 				do {
-					x = rand();
-					y = rand();
+					x = rand(N);
+					y = rand(N);
 				} while(perObj.isOpen(x, y));
 				perObj.open(x, y);
 				count++;
+//				PercolationVisualizer.draw(perObj, N);
+//		        StdDraw.show(100);
 			}
 			threshold[i] = (double)count / (N * N);
+			perObj = null;
 		}
 	}
 	
-	private int rand() {
+	private int rand(int N) {
 		return StdRandom.uniform(N)+1;
 	}
 
