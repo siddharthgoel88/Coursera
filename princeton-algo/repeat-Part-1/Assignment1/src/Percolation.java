@@ -1,6 +1,6 @@
 public class Percolation {
 
-	private byte array[][];
+	private boolean array[][];
 	private int size;
 	private WeightedQuickUnionUF ufDup;
 	private WeightedQuickUnionUF uf;
@@ -10,27 +10,14 @@ public class Percolation {
 			throw new IllegalArgumentException("N should be greater than zero.");
 
 		size = N;
-		array = new byte[size + 1][size + 1];
+		array = new boolean[size + 1][size + 1];
 
 		ufDup = new WeightedQuickUnionUF((size * size) + 2);
 		uf = new WeightedQuickUnionUF((size * size) + 2);
 
-		// for (int i = 1; i <= size; i++) {
-		// ufDup.union(0, i);
-		// uf.union(0, i);
-		// }
-
-		// if ( size > 1 ) {
-		// for (int i = (size * (size-1)); i < (size*size)+1; i++) {
-		// ufDup.union(i, size+1);
-		// }
-		// } else {
-		// ufDup.union(size, size+1);
-		// }
-
 		for (int i = 0; i < (size + 1); i++) {
 			for (int j = 0; j < (size + 1); j++)
-				array[i][j] = 0; // 0 means closed sites
+				array[i][j] = false; // 0 means closed sites
 		}
 	}
 
@@ -42,7 +29,7 @@ public class Percolation {
 		if (isOpen(i, j))
 			return;
 
-		array[i][j] = 1;
+		array[i][j] = true;
 
 		if (i == 1) {
 			ufDup.union(0, indexToVal(i, j));
@@ -98,7 +85,7 @@ public class Percolation {
 	public boolean isOpen(int i, int j) { // is site (row i, column j) open?
 		if (!isValidPoint(i, j))
 			throw new IndexOutOfBoundsException();
-		return (array[i][j] == 1);
+		return (array[i][j]);
 	}
 
 	public boolean isFull(int i, int j) { // is site (row i, column j) full?

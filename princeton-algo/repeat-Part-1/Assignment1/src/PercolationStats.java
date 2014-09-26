@@ -1,18 +1,19 @@
 public class PercolationStats {
-	private double threshold[];
-	private int T;
+	private double meanVal;
+	private double stddevVal;
+	private double confidenceLoVal;
+	private double confidenceHighVal;
 	
 	public PercolationStats(int N, int T) {   // perform T independent computational experiments on an N-by-N grid
 		if (N < 1 || T < 1)
 			throw new java.lang.IllegalArgumentException("Illegal Parameter");
 		
-		this.T = T;
-		threshold = new double[T];
 		monteCarloExperiment(N,T);
 	}
 	
 	private void monteCarloExperiment(int N, int T) {
 		Percolation perObj;
+		double threshold[] = new double[T];
 		for (int i = 0; i < T; i++) {
 			int count = 0;
 			int x,y;
@@ -33,6 +34,10 @@ public class PercolationStats {
 			threshold[i] = (double)count / (N * N);
 			perObj = null;
 		}
+		meanVal = StdStats.mean(threshold);
+		stddevVal = StdStats.stddev(threshold);
+		confidenceLoVal = mean() - ( (1.96 * stddev()) / Math.sqrt(T) );
+		confidenceHighVal = mean() + ( (1.96 * stddev()) / Math.sqrt(T) );
 	}
 	
 	private int rand(int N) {
@@ -40,19 +45,19 @@ public class PercolationStats {
 	}
 
 	public double mean() {                    // sample mean of percolation threshold
-		return StdStats.mean(threshold);
+		return meanVal;
 	}
 	
 	public double stddev() {                  // sample standard deviation of percolation threshold
-		return StdStats.stddev(threshold);
+		return stddevVal;
 	}
 	
 	public double confidenceLo() {            // returns lower bound of the 95% confidence interval
-		return (mean() - ( (1.96 * stddev()) / Math.sqrt(T) ) );
+		return confidenceLoVal;
 	}
 	
 	public double confidenceHi() {            // returns upper bound of the 95% confidence interval
-		return (mean() + ( (1.96 * stddev()) / Math.sqrt(T) ) );
+		return confidenceHighVal;
 	}
 		
 	public static void main(String[] args) {
